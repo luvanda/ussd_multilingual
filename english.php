@@ -5,7 +5,7 @@ include_once 'connection.php';
 
 /******messageFunction incase user input invalid menu*/
 function userMessage(){
-  echo "Please dial the proper menu";
+  echo "Please dial the proper menu.";
   exit();
 }
 /*******userMessage ENDS HERE*/
@@ -24,7 +24,7 @@ function userRegistration()
       break;
 
       default:
-      echo "Invalid input";
+      echo "Invalid input.";
       break;
     }
     }
@@ -42,9 +42,27 @@ function userRegistration()
     elseif (isset($level[4]) && $level[4] != "" && $level[0]==1 && !isset($level[5])) {
         echo "Re-enter four digit PIN:";
     } elseif (isset($level[5]) && $level[5] != "" && $level[0]==1 && !isset($level[6])) {
-        //comparing the passwords
+        //comparing the passwords and ensuring user input digits only which are > 3 & <=4
         if ($level[4] != $level[5]) {
-            echo "Password Do not Match";
+            echo "Password Do not Match.";
+            exit();
+        }
+        //checking the length
+        else if(preg_match("/[a-zA-Z%'~]/",$level[4])){
+          echo "Invalid input only Numbers are required.";
+          exit();
+        }
+
+        //if the inputed PIN is less than 4 digits or greater the four digit
+        else if(strlen($level[4])>4){
+          echo "The PIN is too long, required is four digit PIN.";
+          exit();
+        }
+
+        //if the inputed PIN is less than 4 digits
+        else if(strlen($level[4])<4){
+          echo "The PIN is too short, required is four digit PIN.";
+          exit();
         }
 
         //passwords match
@@ -67,9 +85,10 @@ function userRegistration()
                 $userRegistration->bind_param("ssss", $level[2], $level[3], $phoneNumber, $hashedPassword);
                 $userRegistration->execute();
                 if ($userRegistration) {
-                    echo "The account has been created successfully, Navigate to the agent to deposit your balance";
+                    echo "The account has been created successfully, Visit to any agent to deposit your balance";
                 } else {
                     echo "An error has occured during account registration";
+                    exit();
                 }
       }
       break;
@@ -81,6 +100,7 @@ function userRegistration()
 
             default:
             echo "Invalid Input Select either 1 or 2";
+            break;
     }
     }
     //invalid inputs
@@ -132,9 +152,7 @@ function mainMenu()
 }
 
 //******************************mainMenu function ENDS HERE************************
-
-
-    /*******************************sendMoney FUNCTION********************************/
+/*******************************sendMoney FUNCTION********************************/
     function sendMoney()
     {
         //accessing other variables
@@ -155,7 +173,7 @@ function mainMenu()
         }
 
         //prompting user to enter amount
-        elseif (isset($level[3]) && $level[3] != "" && $level[0]==1 && $level[1] ==1 && !isset($level[4])) {
+        elseif (isset($level[3]) && $level[3] != "" && $level[2] == 1 && $level[0]==1 && $level[1] ==1 && !isset($level[4])) {
             echo "Enter amount:";
         }
 
@@ -173,7 +191,20 @@ function mainMenu()
 
             if ($hashedPassword==false) {
                 echo "Invalid PIN";
-            } elseif ($level[4]>$row_send[1]) {
+            }
+            //checking the input amount it must be a number
+            else if(preg_match("/[a-zA-Z$#'~%^]/",$level[4])){
+              echo "Invalid amount format, only numbers are accepted.";
+              exit();
+            }
+
+            //checking the input mobile number it must be a number
+            else if(preg_match("/[a-zA-Z$#'~%^]/",$level[3]) || strlen($level[3])>10 ||strlen($level[3])<10 ){
+              echo "The provided mobile number is invalid.";
+              exit();
+            }
+
+            elseif ($level[4]>$row_send[1]) {
                 echo "Insufficient Balance";
             } else {
                 echo "You are about to send $level[4] to mobile number: $level[3]\n1. Proceed\n2. Cancel";
@@ -196,6 +227,10 @@ function mainMenu()
                     echo "Invalid Input";
                     break;
             }
+        }
+        else{
+          userMessage();
+          exit();
         }
     }
 /*******************************sendMoney ENDS HERE********************************/
