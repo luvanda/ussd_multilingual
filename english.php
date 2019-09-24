@@ -28,20 +28,20 @@ function userRegistration()
       break;
     }
     }
-    //user input lastname (user must ensure the first case level 1 is 1) otherwise blank screen
+    //user input lastname (user must ensure the first case level 1 is 1) otherwise the selection is invalid
     elseif (isset($level[2]) && $level[2] != "" && $level[0]==1 && $level[1]==1 && !isset($level[3])) {
         echo "Enter lastname:";
     }
 
     //user input first passowrd
-    elseif (isset($level[3]) && $level[3] != "" && $level[0]==1 && !isset($level[4])) {
+    elseif (isset($level[3]) && $level[3] != "" && $level[0]==1 && $level[1]==1 && !isset($level[4])) {
         echo "Enter four digit PIN:";
     }
 
     //user input confirm passowrd
-    elseif (isset($level[4]) && $level[4] != "" && $level[0]==1 && !isset($level[5])) {
+    elseif (isset($level[4]) && $level[4] != "" && $level[0]==1 && $level[1]==1 && !isset($level[5])) {
         echo "Re-enter four digit PIN:";
-    } elseif (isset($level[5]) && $level[5] != "" && $level[0]==1 && !isset($level[6])) {
+    } elseif (isset($level[5]) && $level[5] != "" && $level[0]==1 && $level[1]==1 && !isset($level[6])) {
         //comparing the passwords and ensuring user input digits only which are > 3 & <=4
         if ($level[4] != $level[5]) {
             echo "Password Do not Match.";
@@ -74,7 +74,7 @@ function userRegistration()
         }
     }
     //the case where user select to confirm the insertion of data
-    elseif (isset($level[6]) && $level[6] != "" && $level[0]==1 && !isset($level[7])) {
+    elseif (isset($level[6]) && $level[6] != "" && $level[0]==1 && $level[1]==1 && !isset($level[7])) {
         switch ($level[6]) {
       //user agreed
       case 1:
@@ -150,7 +150,6 @@ function mainMenu()
     //prompting for main menu
     echo "WELCOME\n1.Send money\n2.Withdraw\n3.Payment\n4.My account";
 }
-
 //******************************mainMenu function ENDS HERE************************
 /*******************************sendMoney FUNCTION********************************/
     function sendMoney()
@@ -158,7 +157,7 @@ function mainMenu()
         //accessing other variables
         global $conn,$level,$phoneNumber;
         //displaying options
-        if (isset($level[1]) && $level[0]==1 && isset($level[1])&& $level[1]==1 && !isset($level[2])) {
+        if (isset($level[1]) && $level[0]==1 && $level[1]==1 && !isset($level[2])) {
             echo "Send Money to:\n1.Mobile number";
         } elseif (isset($level[2]) && $level[2] == 1 && $level[0]==1 && $level[1]==1 && !isset($level[3])) {
             switch ($level[2]) {
@@ -182,7 +181,7 @@ function mainMenu()
             echo "Enter your PIN:";
         }
         //prompting user to confirm
-        elseif (isset($level[5]) && $level[5] != "" && $level[0] == 1 && $level[1] == 1 && !isset($level[6])) {
+        elseif (isset($level[5]) && $level[5] != "" && $level[0] == 1 && $level[2] == 1 && $level[1] == 1 && !isset($level[6])) {
             //selecting passowrd from database
             $sql_send = "SELECT password,balance FROM customer WHERE phoneNumber='$phoneNumber'";
             $query_send = mysqli_query($conn, $sql_send);
@@ -209,7 +208,7 @@ function mainMenu()
             } else {
                 echo "You are about to send $level[4] to mobile number: $level[3]\n1. Proceed\n2. Cancel";
             }
-        } elseif (isset($level[6]) && $level[6] != "" && $level[0] == 1 && $level[1] == 1 && !isset($level[7])) {
+        } elseif (isset($level[6]) && $level[6] != "" && $level[0] == 1 && $level[2]==1 && $level[1] == 1 && !isset($level[7])) {
             switch ($level[6]) {
                 case 1:
                     // user has agree to send money;
@@ -289,12 +288,21 @@ function withDraw()
 
         if ($hashedPassword==false) {
             echo "Invalid PIN";
-        } elseif ($row_withdraw[1]<$level[3]) {
+        }
+        //checking the input amount it must be a number
+        else if(preg_match("/[a-zA-Z$#'~%^]/",$level[3])){
+          echo "Invalid amount format, only numbers are accepted.";
+          exit();
+        }
+
+        elseif ($row_withdraw[1]<$level[3]) {
             echo "Insufficient Balance";
-        } else {
+        }
+
+         else {
             echo "You are about to withdraw $level[3] from $level[2] \n1. Proceed\n2. Cancel";
         }
-    } elseif (isset($level[5]) && $level[5] != "" && $level[0]==1  && $level[1] == 2 && !isset($level[6])) {
+    } elseif (isset($level[5]) && ($level[5] == 1 || $level[5]==2) && $level[0]==1  && $level[1] == 2 && !isset($level[6]) && !isset($level[7])) {
         switch ($level[5]) {
                 case 1:
                 {
@@ -325,6 +333,11 @@ function withDraw()
                 break;
             }
     }
+    //invalid input from user
+    else{
+      userMessage();
+      exit();
+    }
 }
 /*********************withDraw() FUNCTION ENDS HERE**********************/
 /*********************payment() FUNCTION STARTS HERE**********************/
@@ -335,7 +348,9 @@ function payment()
     //checking if the level has set
     if (isset($level[1]) && $level[0]==1 && $level[1]==3 && !isset($level[2])) {
         echo " PAYMENT FOR:\n 1. Luku\n 2. DAWASCO";
-    } elseif (isset($level[2]) && $level[2] !="" && $level[0]==1 && $level[1]==3 && !isset($level[3])) {
+    }
+      //user input is either 1 or 2 (incase if added other functionality modify here)
+     elseif (isset($level[2]) && ($level[2] == 1 || $level[2]==2) && $level[0]==1 && $level[1]==3 && !isset($level[3])) {
         switch ($level[2]) {
             case 1:
             echo "Enter Reference Number:";
@@ -362,14 +377,20 @@ function payment()
         //confirming the user balance
         if ($hashedPassword==false) {
             echo "Invalid PIN";
-        } elseif ($row_payment[1]<$level[4]) {
+        }
+        //checking the input amount it must be a number
+        else if(preg_match("/[a-zA-Z$#'~%^]/",$level[4])){
+          echo "Invalid amount format, only numbers are accepted.";
+          exit();
+        }
+        elseif ($row_payment[1]<$level[4]) {
             echo "Insufficient Balance";
         } else {
             echo "You are about to Pay $level[4] to $level[3]\n1. Proceed\n2. Cancel";
         }
     }
     //last stage user confirmation
-    elseif (isset($level[6]) && $level[6] != "" && $level[0] == 1 && $level[1]==3 && !isset($level[7])) {
+    elseif (isset($level[6]) && ($level[6] == 1 || $level[6] == 2) && $level[0] == 1 && $level[1]==3 && !isset($level[7])) {
         switch ($level[6]) {
             case 1:
                 {
@@ -401,6 +422,11 @@ function payment()
                 echo "Invalid input";
                 break;
         }
+    }
+
+    else{
+      userMessage();
+      exit();
     }
 }
 /*********************payment() FUNCTION ENDS HERE**********************/

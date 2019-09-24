@@ -34,7 +34,7 @@ function userRegistration()
     }
 
     //user input first passowrd
-    elseif (isset($level[3]) && $level[3] != "" && $level[0]==2 && !isset($level[4])) {
+    elseif (isset($level[3]) && $level[3] != "" && $level[0]==2 && $level[1] == 1 && !isset($level[4])) {
         echo "Jaza tarakimu nne (PIN):";
     }
 
@@ -155,7 +155,7 @@ function mainMenu()
         //accessing other variables
         global $conn,$level,$phoneNumber;
         //displaying options
-        if (isset($level[1]) && $level[0]==2 && isset($level[1])&& $level[1]==1 && !isset($level[2])) {
+        if (isset($level[1]) && $level[0]==2 && $level[1]==1 && !isset($level[2])) {
             echo "Tuma pesa:\n1.Kwa namba ya simu";
         } elseif (isset($level[2]) && $level[2] == 1 && $level[0]==2 && $level[1]==1 && !isset($level[3])) {
             switch ($level[2]) {
@@ -179,7 +179,7 @@ function mainMenu()
             echo "Weka namba ya siri (PIN):";
         }
         //prompting user to confirm
-        elseif (isset($level[5]) && $level[5] != "" && $level[0] == 2 && $level[1] == 1 && !isset($level[6])) {
+        elseif (isset($level[5]) && $level[5] != "" && $level[0] == 2 && $level[2] == 1 && $level[1] == 1 && !isset($level[6])) {
             //selecting passowrd from database
             $sql_send = "SELECT password,balance FROM customer WHERE phoneNumber='$phoneNumber'";
             $query_send = mysqli_query($conn, $sql_send);
@@ -206,7 +206,7 @@ function mainMenu()
             } else {
                 echo "Unakaribia kutuma Tsh. $level[4] kwenda namba: $level[3]\n1. Endelea\n2. Sitisha";
             }
-        } elseif (isset($level[6]) && $level[6] != "" && $level[0] == 2 && $level[1] == 1 && !isset($level[7])) {
+        } elseif (isset($level[6]) && $level[6] != "" && $level[0] == 2 && $level[2] == 1 && $level[1] == 1 && !isset($level[7])) {
             switch ($level[6]) {
                 case 1:
                     // user has agree to send money;
@@ -286,12 +286,18 @@ function withDraw()
 
         if ($hashedPassword==false) {
             echo "Namba ya siri (PIN) si sahihi";
-        } elseif ($row_withdraw[1]<$level[3]) {
+        }
+        //checking the input amount it must be a number
+        else if(preg_match("/[a-zA-Z$#'~%^]/",$level[3])){
+          echo "Tafadhali kiasi ulichoweka si sahihi jaza tarakimu pekee na si herufi.";
+          exit();
+        }
+        elseif ($row_withdraw[1]<$level[3]) {
             echo "Salio lako halitoshi";
         } else {
             echo "Unakaribia kutoa Ths.$level[3] kwa $level[2] \n1. Kuthibitisha\n2. Kubatilisha";
         }
-    } elseif (isset($level[5]) && $level[5] != "" && $level[0]==2  && $level[1] == 2 && !isset($level[6])) {
+    } elseif (isset($level[5]) && ($level[5] == 1 || $level[5]==2) && $level[0]==2  && $level[1] == 2 && !isset($level[6])) {
         switch ($level[5]) {
                 case 1:
                 {
@@ -322,6 +328,11 @@ function withDraw()
                 break;
             }
     }
+    else{
+      //calling the user message function since user input out of choice
+      userMessage();
+      exit();
+    }
 }
 /*********************withDraw() FUNCTION ENDS HERE**********************/
 /*********************payment() FUNCTION STARTS HERE**********************/
@@ -332,7 +343,9 @@ function payment()
     //checking if the level has set
     if (isset($level[1]) && $level[0]==2 && $level[1]==3 && !isset($level[2])) {
         echo " LIPA BILI:\n 1. Luku\n 2. DAWASCO";
-    } elseif (isset($level[2]) && $level[2] !="" && $level[0]==2 && $level[1]==3 && !isset($level[3])) {
+    }
+    //user input is either 1 or 2 (incase if added other functionality modify here)
+    elseif (isset($level[2]) && ($level[2] == 1 || $level[2] == 2) && $level[0]==2 && $level[1]==3 && !isset($level[3])) {
         switch ($level[2]) {
             case 1:
             echo "Weka lipa namba:";
@@ -359,14 +372,21 @@ function payment()
         //confirming the user balance
         if ($hashedPassword==false) {
             echo "Namba ya siri si sahihi";
-        } elseif ($row_payment[1]<$level[4]) {
+        }
+        //checking the input amount it must be a number
+        else if(preg_match("/[a-zA-Z$#'~%^]/",$level[4])){
+          echo "Tafadhali kiasi ulichoweka si sahihi jaza tarakimu pekee na si herufi.";
+          exit();
+        }
+
+        elseif ($row_payment[1]<$level[4]) {
             echo "Salio lako halitoshi";
         } else {
             echo "Unakaribia kulipa $level[4] kwenda $level[3]\n1. Kuthibitisha\n2. Kubatilisha";
         }
     }
     //last stage user confirmation
-    elseif (isset($level[6]) && $level[6] != "" && $level[0] == 2 && $level[1]==3 && !isset($level[7])) {
+    elseif (isset($level[6]) && ($level[6] == 1 || $level[6]==2) && $level[0] == 2 && $level[1]==3 && !isset($level[7])) {
         switch ($level[6]) {
             case 1:
                 {
@@ -398,6 +418,10 @@ function payment()
                 echo "Umefanya uchaguzi batili";
                 break;
         }
+    }
+    else{
+      userMessage();
+      exit();
     }
 }
 /*********************payment() FUNCTION ENDS HERE**********************/
