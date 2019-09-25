@@ -3,9 +3,10 @@
 include_once 'connection.php';
 //prompt for user registration
 /******messageFunction incase user input invalid menu*/
-function userMessage(){
-  echo "Samahani uchaguzi uloweka hautambuliki.";
-  exit();
+function userMessage()
+{
+    echo "Samahani uchaguzi uloweka hautambuliki.";
+    exit();
 }
 /*******userMessage ENDS HERE*/
 //******************************userRegistration function**********************************
@@ -47,20 +48,20 @@ function userRegistration()
             echo "Namba za siri (PIN) hazifanani:";
         }
         //checking the length
-        else if(preg_match("/[a-zA-Z%'~]/",$level[4])){
-          echo "Tafadhali jaza namba pekee si herufi.";
-          exit();
+        elseif (preg_match("/[^0-9]/", $level[4])) {
+            echo "Tafadhali jaza namba pekee si herufi.";
+            exit();
         }
         //if the inputed PIN is less than 4 digits or greater the four digit
-        else if(strlen($level[4])>4){
-          echo "Namba ya siri (PIN) ni ndefu mno, tafadhali jaza tarakimu nne tu.";
-          exit();
+        elseif (strlen($level[4])>4) {
+            echo "Namba ya siri (PIN) ni ndefu, tafadhali jaza tarakimu nne tu.";
+            exit();
         }
 
         //if the inputed PIN is less than 4 digits
-        else if(strlen($level[4])<4){
-          echo "Namba ya siri (PIN) ni fupi mno, tafadhali jaza tarakimu nne tu.";
-          exit();
+        elseif (strlen($level[4])<4) {
+            echo "Namba ya siri (PIN) ni fupi, tafadhali jaza tarakimu nne tu.";
+            exit();
         }
 
         //passwords match
@@ -99,11 +100,10 @@ function userRegistration()
             default:
             echo "Umefanya uchaguzi batili tafadhali chagua 1 au 2";
     }
-    }
-    else{
-      // echo "Menyu uloweka haipo";
-      userMessage();
-      exit();
+    } else {
+        // echo "Menyu uloweka haipo";
+        userMessage();
+        exit();
     }
 }
 
@@ -190,21 +190,19 @@ function mainMenu()
                 echo "Namba ya siri PIN si sahihi";
             }
             //checking the input amount it must be a number
-            else if(preg_match("/[a-zA-Z$#'~%^]/",$level[4])){
-              echo "Tafadhali jaza tarakimu pekee na si herufi.";
-              exit();
+            elseif (preg_match("/[^0-9]/", $level[4])) {
+                echo "Tafadhali kiasi ulichoweka si sahihi jaza tarakimu pekee na si herufi.";
+                exit();
             }
 
             //checking the input mobile number it must be a number
-            else if(preg_match("/[a-zA-Z$#'~%^]/",$level[3]) || strlen($level[3])>10 ||strlen($level[3])<10 ){
-              echo "Tafadhali namba ya simu uliyoweka si sahihi.";
-              exit();
-            }
-
-             elseif ($level[4]>$row_send[1]) {
+            elseif (preg_match("/[^0-9]/", $level[3]) || strlen($level[3])>10 ||strlen($level[3])<10) {
+                echo "Tafadhali namba ya simu uliyoweka si sahihi.";
+                exit();
+            } elseif ($level[4]>$row_send[1]) {
                 echo "Salio lako halitoshi";
             } else {
-                echo "Unakaribia kutuma Tsh. $level[4] kwenda namba: $level[3]\n1. Endelea\n2. Sitisha";
+                echo "Unakaribia kutuma Tsh. $level[4] kwenda namba: $level[3]\n1. Kuthibitisha\n2. Kusitisha";
             }
         } elseif (isset($level[6]) && $level[6] != "" && $level[0] == 2 && $level[2] == 1 && $level[1] == 1 && !isset($level[7])) {
             switch ($level[6]) {
@@ -224,10 +222,9 @@ function mainMenu()
                     echo "Umefanya uchaguzi batili";
                     break;
             }
-        }
-        else{
-          userMessage();
-          exit();
+        } else {
+            userMessage();
+            exit();
         }
     }
 /*******************************sendMoney ENDS HERE********************************/
@@ -259,7 +256,7 @@ function updateMoney()
         $sql_recipient_update = "UPDATE customer SET balance='$newRecipientBalance' WHERE phoneNumber='$level[3]'";
         $query_recipient_update = mysqli_query($conn, $sql_recipient_update);
         if ($query_recipient_update) {
-            echo "$level[4] zimetumwa kikamilifu kwenda namba: $level[3]";
+            echo "Tsh.$level[4] zimetumwa kikamilifu kwenda namba: $level[3]";
         } else {
             echo "Tatizo limetokea tafadhali jaribu tena baadae";
         }
@@ -287,12 +284,17 @@ function withDraw()
         if ($hashedPassword==false) {
             echo "Namba ya siri (PIN) si sahihi";
         }
-        //checking the input amount it must be a number
-        else if(preg_match("/[a-zA-Z$#'~%^]/",$level[3])){
-          echo "Tafadhali kiasi ulichoweka si sahihi jaza tarakimu pekee na si herufi.";
-          exit();
+
+        //checking the agent number it must be a number
+        elseif (preg_match("/[^0-9]/", $level[2])) {
+            echo "Tafadhali namba ya wakala si sahihi jaza tarakimu pekee na si herufi.";
+            exit();
         }
-        elseif ($row_withdraw[1]<$level[3]) {
+        //checking the input amount it must be a number
+        elseif (preg_match("/[^0-9]/", $level[3])) {
+            echo "Tafadhali kiasi ulichoweka si sahihi jaza tarakimu pekee na si herufi.";
+            exit();
+        } elseif ($row_withdraw[1]<$level[3]) {
             echo "Salio lako halitoshi";
         } else {
             echo "Unakaribia kutoa Ths.$level[3] kwa $level[2] \n1. Kuthibitisha\n2. Kubatilisha";
@@ -312,7 +314,7 @@ function withDraw()
                     $query_update_withDrawbalance = mysqli_query($conn, $sql_update_withDrawbalance);
 
                     if ($query_update_withDrawbalance) {
-                        echo "$level[3] imetolewa kikamilifu toka kwa $level[2].";
+                        echo "Tsh.$level[3] imetolewa kikamilifu toka kwa $level[2].";
                     } else {
                         echo "Hitilafu imetokea tafadhali jaribu tena baadae";
                     }
@@ -327,11 +329,10 @@ function withDraw()
                 echo "Umefanya uchaguzi batili";
                 break;
             }
-    }
-    else{
-      //calling the user message function since user input out of choice
-      userMessage();
-      exit();
+    } else {
+        //calling the user message function since user input out of choice
+        userMessage();
+        exit();
     }
 }
 /*********************withDraw() FUNCTION ENDS HERE**********************/
@@ -373,13 +374,17 @@ function payment()
         if ($hashedPassword==false) {
             echo "Namba ya siri si sahihi";
         }
-        //checking the input amount it must be a number
-        else if(preg_match("/[a-zA-Z$#'~%^]/",$level[4])){
-          echo "Tafadhali kiasi ulichoweka si sahihi jaza tarakimu pekee na si herufi.";
-          exit();
-        }
 
-        elseif ($row_payment[1]<$level[4]) {
+        //checking the reference number it must be a number
+        elseif (preg_match("/[^0-9]/", $level[4])) {
+            echo "Tafadhali namba ya kumbukumbu si sahihi jaza tarakimu pekee na si herufi.";
+            exit();
+        }
+        //checking the input amount it must be a number
+        elseif (preg_match("/[^0-9]/", $level[4])) {
+            echo "Tafadhali kiasi ulichoweka si sahihi jaza tarakimu pekee na si herufi.";
+            exit();
+        } elseif ($row_payment[1]<$level[4]) {
             echo "Salio lako halitoshi";
         } else {
             echo "Unakaribia kulipa $level[4] kwenda $level[3]\n1. Kuthibitisha\n2. Kubatilisha";
@@ -418,10 +423,9 @@ function payment()
                 echo "Umefanya uchaguzi batili";
                 break;
         }
-    }
-    else{
-      userMessage();
-      exit();
+    } else {
+        userMessage();
+        exit();
     }
 }
 /*********************payment() FUNCTION ENDS HERE**********************/
@@ -460,7 +464,7 @@ function myAccount()
         if ($hashedPassword==true) {
             echo "Weka namba ya siri (PIN) mpya:";
         } else {
-            echo "Namba ya siri (PIN) si sahihi";
+            echo "Namba ya siri (PIN) si sahihi.";
             exit();
         }
     } elseif (isset($level[4]) && $level[1] == 4 && $level[0] == 2 && $level[2]==2 && !isset($level[5])) {
@@ -468,6 +472,23 @@ function myAccount()
     } elseif (isset($level[5]) && $level[1] == 4 && $level[0] == 2 && $level[2]==2 && !isset($level[6])) {
         if ($level[4] !=$level[5]) {
             echo "Namba ya siri si sahihi rudia tena";
+            exit();
+        }
+
+        //checking the input password it must be a number
+        elseif (preg_match("/[^0-9]/", $level[4])) {
+            echo "Tafadhali tumia tarakimu pekee kama namba ya siri na si herufi.";
+            exit();
+        }
+        //checking if the PIN is too long
+        elseif (strlen($level[4])>4) {
+            echo "Namba ya siri (PIN) imezidi, jaza tarakimu nne tu.";
+            exit();
+        }
+
+        //checking if the PIN is too short
+        elseif (strlen($level[4])<4) {
+            echo "Namba ya siri (PIN) ni pungufu, tafadhali jaza tarakimu nne tu.";
             exit();
         } else {
             //updating password
@@ -484,7 +505,8 @@ function myAccount()
             }
         }
     } else {
-        echo "Unknown command:";
+        userMessage();
+        exit();
     }
 }
 /*********************myAccount() FUNCTION ENDS HERE**********************/

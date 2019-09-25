@@ -2,11 +2,11 @@
 //including the connection
 include_once 'connection.php';
 //prompt for user registration
-
 /******messageFunction incase user input invalid menu*/
-function userMessage(){
-  echo "Please dial the proper menu.";
-  exit();
+function userMessage()
+{
+    echo "Please dial the proper menu.";
+    exit();
 }
 /*******userMessage ENDS HERE*/
 //******************************userRegistration function**********************************
@@ -48,21 +48,21 @@ function userRegistration()
             exit();
         }
         //checking the length
-        else if(preg_match("/[a-zA-Z%'~]/",$level[4])){
-          echo "Invalid input only Numbers are required.";
-          exit();
+        elseif (preg_match("/[^0-9]/", $level[4])) {
+            echo "Invalid input only Numbers are required.";
+            exit();
         }
 
         //if the inputed PIN is less than 4 digits or greater the four digit
-        else if(strlen($level[4])>4){
-          echo "The PIN is too long, required is four digit PIN.";
-          exit();
+        elseif (strlen($level[4])>4) {
+            echo "The PIN is too long, required is four digit PIN.";
+            exit();
         }
 
         //if the inputed PIN is less than 4 digits
-        else if(strlen($level[4])<4){
-          echo "The PIN is too short, required is four digit PIN.";
-          exit();
+        elseif (strlen($level[4])<4) {
+            echo "The PIN is too short, required is four digit PIN.";
+            exit();
         }
 
         //passwords match
@@ -104,14 +104,13 @@ function userRegistration()
     }
     }
     //invalid inputs
-    else{
-      userMessage();
-      exit();
+    else {
+        userMessage();
+        exit();
     }
 }
 
 //******************************userRegistration function ENDS HERE**********************************
-
 //******************************main function**********************************
 function mainFunction()
 {
@@ -192,21 +191,19 @@ function mainMenu()
                 echo "Invalid PIN";
             }
             //checking the input amount it must be a number
-            else if(preg_match("/[a-zA-Z$#'~%^]/",$level[4])){
-              echo "Invalid amount format, only numbers are accepted.";
-              exit();
+            elseif (preg_match("/[^0-9]/", $level[4])) {
+                echo "Invalid amount format, only numbers are accepted.";
+                exit();
             }
 
             //checking the input mobile number it must be a number
-            else if(preg_match("/[a-zA-Z$#'~%^]/",$level[3]) || strlen($level[3])>10 ||strlen($level[3])<10 ){
-              echo "The provided mobile number is invalid.";
-              exit();
-            }
-
-            elseif ($level[4]>$row_send[1]) {
+            elseif (preg_match("/[^0-9]/", $level[3]) || strlen($level[3])>10 ||strlen($level[3])<10) {
+                echo "The provided mobile number is invalid.";
+                exit();
+            } elseif ($level[4]>$row_send[1]) {
                 echo "Insufficient Balance";
             } else {
-                echo "You are about to send $level[4] to mobile number: $level[3]\n1. Proceed\n2. Cancel";
+                echo "You are about to send Tsh.$level[4] to mobile number: $level[3]\n1. Proceed\n2. Cancel";
             }
         } elseif (isset($level[6]) && $level[6] != "" && $level[0] == 1 && $level[2]==1 && $level[1] == 1 && !isset($level[7])) {
             switch ($level[6]) {
@@ -226,10 +223,9 @@ function mainMenu()
                     echo "Invalid Input";
                     break;
             }
-        }
-        else{
-          userMessage();
-          exit();
+        } else {
+            userMessage();
+            exit();
         }
     }
 /*******************************sendMoney ENDS HERE********************************/
@@ -261,7 +257,7 @@ function updateMoney()
         $sql_recipient_update = "UPDATE customer SET balance='$newRecipientBalance' WHERE phoneNumber='$level[3]'";
         $query_recipient_update = mysqli_query($conn, $sql_recipient_update);
         if ($query_recipient_update) {
-            echo "$level[4] has been successfully sent to mobile number: $level[3]";
+            echo "Tsh.$level[4] has been successfully sent to mobile number: $level[3]";
         } else {
             echo "System out of service";
         }
@@ -289,17 +285,18 @@ function withDraw()
         if ($hashedPassword==false) {
             echo "Invalid PIN";
         }
+        //checking the input agent number it must be a number
+        elseif (preg_match("/[^0-9]/", $level[2])) {
+            echo "The entered Agent number is invalid, only numbers are accepted.";
+            exit();
+        }
         //checking the input amount it must be a number
-        else if(preg_match("/[a-zA-Z$#'~%^]/",$level[3])){
-          echo "Invalid amount format, only numbers are accepted.";
-          exit();
-        }
-
-        elseif ($row_withdraw[1]<$level[3]) {
+        elseif (preg_match("/[^0-9]/", $level[3])) {
+            echo "Invalid amount format, only numbers are accepted.";
+            exit();
+        } elseif ($row_withdraw[1]<$level[3]) {
             echo "Insufficient Balance";
-        }
-
-         else {
+        } else {
             echo "You are about to withdraw $level[3] from $level[2] \n1. Proceed\n2. Cancel";
         }
     } elseif (isset($level[5]) && ($level[5] == 1 || $level[5]==2) && $level[0]==1  && $level[1] == 2 && !isset($level[6]) && !isset($level[7])) {
@@ -334,9 +331,9 @@ function withDraw()
             }
     }
     //invalid input from user
-    else{
-      userMessage();
-      exit();
+    else {
+        userMessage();
+        exit();
     }
 }
 /*********************withDraw() FUNCTION ENDS HERE**********************/
@@ -349,8 +346,8 @@ function payment()
     if (isset($level[1]) && $level[0]==1 && $level[1]==3 && !isset($level[2])) {
         echo " PAYMENT FOR:\n 1. Luku\n 2. DAWASCO";
     }
-      //user input is either 1 or 2 (incase if added other functionality modify here)
-     elseif (isset($level[2]) && ($level[2] == 1 || $level[2]==2) && $level[0]==1 && $level[1]==3 && !isset($level[3])) {
+    //user input is either 1 or 2 (incase if added other functionality modify here)
+    elseif (isset($level[2]) && ($level[2] == 1 || $level[2]==2) && $level[0]==1 && $level[1]==3 && !isset($level[3])) {
         switch ($level[2]) {
             case 1:
             echo "Enter Reference Number:";
@@ -378,12 +375,16 @@ function payment()
         if ($hashedPassword==false) {
             echo "Invalid PIN";
         }
-        //checking the input amount it must be a number
-        else if(preg_match("/[a-zA-Z$#'~%^]/",$level[4])){
-          echo "Invalid amount format, only numbers are accepted.";
-          exit();
+        //checking the input reference number it must be a number
+        elseif (preg_match("/[^0-9]/", $level[2])) {
+            echo "Invalid Reference number format, only numbers are accepted.";
+            exit();
         }
-        elseif ($row_payment[1]<$level[4]) {
+        //checking the input amount it must be a number
+        elseif (preg_match("/[^0-9]/", $level[4])) {
+            echo "Invalid amount format, only numbers are accepted.";
+            exit();
+        } elseif ($row_payment[1]<$level[4]) {
             echo "Insufficient Balance";
         } else {
             echo "You are about to Pay $level[4] to $level[3]\n1. Proceed\n2. Cancel";
@@ -422,11 +423,9 @@ function payment()
                 echo "Invalid input";
                 break;
         }
-    }
-
-    else{
-      userMessage();
-      exit();
+    } else {
+        userMessage();
+        exit();
     }
 }
 /*********************payment() FUNCTION ENDS HERE**********************/
@@ -474,6 +473,23 @@ function myAccount()
         if ($level[4] !=$level[5]) {
             echo "Error PIN do not match";
             exit();
+        }
+        //checking the input amount it must be a number
+        elseif (preg_match("/[^0-9]/", $level[4])) {
+            echo "Please use numbers only to set your PIN.";
+            exit();
+        }
+
+        //checking if the PIN is too long
+        elseif (strlen($level[4])>4) {
+            echo "PIN too long, required only four digits";
+            exit();
+        }
+
+        //checking if the PIN is too short
+        elseif (strlen($level[4])<4) {
+            echo "PIN too short, required only four digits";
+            exit();
         } else {
             //updating password
             $passwordUpdate = password_hash($level[4], PASSWORD_DEFAULT);
@@ -489,7 +505,8 @@ function myAccount()
             }
         }
     } else {
-        echo "Unknown command:";
+        userMessage();
+        exit();
     }
 }
 /*********************myAccount() FUNCTION ENDS HERE**********************/
