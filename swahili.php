@@ -186,6 +186,11 @@ function mainMenu()
             $row_send = mysqli_fetch_array($query_send);
             $hashedPassword = password_verify($level[5], $row_send[0]);
 
+            //selecting a name of user to receive money
+            $sql_send_to = "SELECT firstName,lastName FROM customer WHERE phoneNumber='$level[3]'";
+            $query_send_to = mysqli_query($conn,$sql_send_to);
+            $row_send_to = mysqli_fetch_array($query_send_to);
+
             if ($hashedPassword==false) {
                 echo "Namba ya siri PIN si sahihi";
             }
@@ -202,7 +207,7 @@ function mainMenu()
             } elseif ($level[4]>$row_send[1]) {
                 echo "Salio lako halitoshi";
             } else {
-                echo "Unakaribia kutuma Tsh. $level[4] kwenda namba: $level[3]\n1. Kuthibitisha\n2. Kusitisha";
+                echo "Unakaribia kutuma Tsh.$level[4] kwenda kwa $row_send_to[0] $row_send_to[1] namba: $level[3]\n1. Kuthibitisha\n2. Kusitisha";
             }
         } elseif (isset($level[6]) && $level[6] != "" && $level[0] == 2 && $level[2] == 1 && $level[1] == 1 && !isset($level[7])) {
             switch ($level[6]) {

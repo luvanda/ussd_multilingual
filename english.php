@@ -182,10 +182,15 @@ function mainMenu()
         //prompting user to confirm
         elseif (isset($level[5]) && $level[5] != "" && $level[0] == 1 && $level[2] == 1 && $level[1] == 1 && !isset($level[6])) {
             //selecting passowrd from database
-            $sql_send = "SELECT password,balance FROM customer WHERE phoneNumber='$phoneNumber'";
+            $sql_send = "SELECT password,balance,firstName,lastName FROM customer WHERE phoneNumber='$phoneNumber'";
             $query_send = mysqli_query($conn, $sql_send);
             $row_send = mysqli_fetch_array($query_send);
             $hashedPassword = password_verify($level[5], $row_send[0]);
+
+            //selecting a name of user to receive money
+            $sql_send_to = "SELECT firstName,lastName FROM customer WHERE phoneNumber='$level[3]'";
+            $query_send_to = mysqli_query($conn,$sql_send_to);
+            $row_send_to = mysqli_fetch_array($query_send_to);
 
             if ($hashedPassword==false) {
                 echo "Invalid PIN";
@@ -203,7 +208,7 @@ function mainMenu()
             } elseif ($level[4]>$row_send[1]) {
                 echo "Insufficient Balance";
             } else {
-                echo "You are about to send Tsh.$level[4] to mobile number: $level[3]\n1. Proceed\n2. Cancel";
+                echo "You are about to send Tsh.$level[4] to $row_send_to[0] $row_send_to[1] mobile number: $level[3]\n1. Proceed\n2. Cancel";
             }
         } elseif (isset($level[6]) && $level[6] != "" && $level[0] == 1 && $level[2]==1 && $level[1] == 1 && !isset($level[7])) {
             switch ($level[6]) {
