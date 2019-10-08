@@ -69,7 +69,7 @@ function userRegistration()
             global $phoneNumber;
             echo "Uhakiki wa taarifa:\n\n";
             echo "Jina la kwanza: $level[2]\nJina ka mwisho: $level[3]\nNamba ya simu: $phoneNumber\n\n";
-            echo "1. Kubali\n2. Sitisha";
+            echo "1. Kuthibitisha\n2. kusitisha";
         }
     }
     //the case where user select to confirm the insertion of data
